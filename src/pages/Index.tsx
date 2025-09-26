@@ -5,7 +5,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import Icon from '@/components/ui/icon'
+import AutoPartsCatalog from '@/components/AutoPartsCatalog'
 
 const Index = () => {
   const [selectedSymptom, setSelectedSymptom] = useState('')
@@ -115,6 +117,7 @@ const Index = () => {
             </div>
             <nav className="hidden md:flex items-center space-x-8">
               <a href="#services" className="text-foreground hover:text-primary transition-colors">Услуги</a>
+              <a href="#catalog" className="text-foreground hover:text-primary transition-colors">Каталог</a>
               <a href="#diagnosis" className="text-foreground hover:text-primary transition-colors">Диагностика</a>
               <a href="#contact" className="text-foreground hover:text-primary transition-colors">Контакты</a>
               <Button>Записаться</Button>
@@ -162,141 +165,154 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Online Diagnosis */}
-      <section id="diagnosis" className="py-16">
+      {/* Main Content Tabs */}
+      <section className="py-16">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h3 className="text-3xl font-bold text-foreground mb-4">Онлайн диагностика неисправностей</h3>
-            <p className="text-muted-foreground text-lg">Выберите симптом и получите предварительный диагноз</p>
-          </div>
+          <Tabs defaultValue="diagnosis" className="w-full">
+            <TabsList className="grid w-full grid-cols-3 max-w-md mx-auto mb-12">
+              <TabsTrigger value="diagnosis">Диагностика</TabsTrigger>
+              <TabsTrigger value="catalog">Каталог</TabsTrigger>
+              <TabsTrigger value="services">Услуги</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="diagnosis" id="diagnosis">
+              <div className="text-center mb-12">
+                <h3 className="text-3xl font-bold text-foreground mb-4">Онлайн диагностика неисправностей</h3>
+                <p className="text-muted-foreground text-lg">Выберите симптом и получите предварительный диагноз</p>
+              </div>
 
-          <div className="max-w-2xl mx-auto">
-            <Card className="animate-fade-in">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Icon name="Stethoscope" size={24} />
-                  Система диагностики
-                </CardTitle>
-                <CardDescription>
-                  Опишите проблему с автомобилем для получения рекомендаций
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div>
-                  <label className="text-sm font-medium mb-2 block">Выберите симптом:</label>
-                  <Select value={selectedSymptom} onValueChange={setSelectedSymptom}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Что происходит с автомобилем?" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {symptoms.map((symptom) => (
-                        <SelectItem key={symptom.value} value={symptom.value}>
-                          {symptom.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+              <div className="max-w-2xl mx-auto">
+                <Card className="animate-fade-in">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Icon name="Stethoscope" size={24} />
+                      Система диагностики
+                    </CardTitle>
+                    <CardDescription>
+                      Опишите проблему с автомобилем для получения рекомендаций
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    <div>
+                      <label className="text-sm font-medium mb-2 block">Выберите симптом:</label>
+                      <Select value={selectedSymptom} onValueChange={setSelectedSymptom}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Что происходит с автомобилем?" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {symptoms.map((symptom) => (
+                            <SelectItem key={symptom.value} value={symptom.value}>
+                              {symptom.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
 
-                <Button 
-                  onClick={handleDiagnosis} 
-                  disabled={!selectedSymptom}
-                  className="w-full"
-                  size="lg"
-                >
-                  <Icon name="Search" className="mr-2" size={20} />
-                  Провести диагностику
-                </Button>
+                    <Button 
+                      onClick={handleDiagnosis} 
+                      disabled={!selectedSymptom}
+                      className="w-full"
+                      size="lg"
+                    >
+                      <Icon name="Search" className="mr-2" size={20} />
+                      Провести диагностику
+                    </Button>
 
-                {diagnosisResult && (
-                  <div className="animate-scale-in">
-                    <Separator className="my-6" />
-                    <div className="space-y-4">
-                      <div className="flex items-center gap-2">
-                        <Badge variant="secondary">Результат диагностики</Badge>
-                      </div>
-                      
-                      <div className="bg-muted/50 p-4 rounded-lg">
-                        <h4 className="font-semibold text-lg mb-2 text-foreground">
-                          {diagnoses[diagnosisResult as keyof typeof diagnoses].problem}
-                        </h4>
-                        
-                        <div className="grid md:grid-cols-2 gap-4 mt-4">
-                          <div>
-                            <h5 className="font-medium text-foreground mb-2">Возможные причины:</h5>
-                            <ul className="space-y-1">
-                              {diagnoses[diagnosisResult as keyof typeof diagnoses].causes.map((cause, index) => (
-                                <li key={index} className="text-sm text-muted-foreground flex items-start gap-2">
-                                  <Icon name="AlertCircle" size={16} className="mt-0.5 text-orange-500" />
-                                  {cause}
-                                </li>
-                              ))}
-                            </ul>
+                    {diagnosisResult && (
+                      <div className="animate-scale-in">
+                        <Separator className="my-6" />
+                        <div className="space-y-4">
+                          <div className="flex items-center gap-2">
+                            <Badge variant="secondary">Результат диагностики</Badge>
                           </div>
                           
-                          <div>
-                            <h5 className="font-medium text-foreground mb-2">Рекомендуемые действия:</h5>
-                            <ul className="space-y-1">
-                              {diagnoses[diagnosisResult as keyof typeof diagnoses].solutions.map((solution, index) => (
-                                <li key={index} className="text-sm text-muted-foreground flex items-start gap-2">
-                                  <Icon name="CheckCircle" size={16} className="mt-0.5 text-green-500" />
-                                  {solution}
-                                </li>
-                              ))}
-                            </ul>
+                          <div className="bg-muted/50 p-4 rounded-lg">
+                            <h4 className="font-semibold text-lg mb-2 text-foreground">
+                              {diagnoses[diagnosisResult as keyof typeof diagnoses].problem}
+                            </h4>
+                            
+                            <div className="grid md:grid-cols-2 gap-4 mt-4">
+                              <div>
+                                <h5 className="font-medium text-foreground mb-2">Возможные причины:</h5>
+                                <ul className="space-y-1">
+                                  {diagnoses[diagnosisResult as keyof typeof diagnoses].causes.map((cause, index) => (
+                                    <li key={index} className="text-sm text-muted-foreground flex items-start gap-2">
+                                      <Icon name="AlertCircle" size={16} className="mt-0.5 text-orange-500" />
+                                      {cause}
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                              
+                              <div>
+                                <h5 className="font-medium text-foreground mb-2">Рекомендуемые действия:</h5>
+                                <ul className="space-y-1">
+                                  {diagnoses[diagnosisResult as keyof typeof diagnoses].solutions.map((solution, index) => (
+                                    <li key={index} className="text-sm text-muted-foreground flex items-start gap-2">
+                                      <Icon name="CheckCircle" size={16} className="mt-0.5 text-green-500" />
+                                      {solution}
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="bg-primary/5 border border-primary/20 p-4 rounded-lg">
+                            <p className="text-sm text-foreground">
+                              <Icon name="Info" size={16} className="inline mr-2" />
+                              Это предварительная диагностика. Для точного определения неисправности 
+                              рекомендуем пройти профессиональную диагностику в нашем сервисе.
+                            </p>
                           </div>
                         </div>
                       </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="catalog" id="catalog">
+              <AutoPartsCatalog />
+            </TabsContent>
+            
+            <TabsContent value="services" id="services">
+              <div className="text-center mb-12">
+                <h3 className="text-3xl font-bold text-foreground mb-4">Наши услуги</h3>
+                <p className="text-muted-foreground text-lg">Полный спектр работ по автоэлектрике</p>
+              </div>
 
-                      <div className="bg-primary/5 border border-primary/20 p-4 rounded-lg">
-                        <p className="text-sm text-foreground">
-                          <Icon name="Info" size={16} className="inline mr-2" />
-                          Это предварительная диагностика. Для точного определения неисправности 
-                          рекомендуем пройти профессиональную диагностику в нашем сервисе.
-                        </p>
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {services.map((service, index) => (
+                  <Card key={index} className="hover:shadow-lg transition-all duration-300 hover:-translate-y-1 animate-fade-in group">
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                          <Icon name={service.icon as any} className="text-primary" size={24} />
+                        </div>
+                        <Badge variant="outline">{service.price}</Badge>
                       </div>
-                    </div>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
+                      <CardTitle className="text-xl">{service.title}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <CardDescription className="text-base leading-relaxed">
+                        {service.description}
+                      </CardDescription>
+                      <Button variant="outline" className="w-full mt-4 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                        Подробнее
+                      </Button>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </TabsContent>
+          </Tabs>
         </div>
       </section>
 
-      {/* Services */}
-      <section id="services" className="py-16 bg-muted/30">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h3 className="text-3xl font-bold text-foreground mb-4">Наши услуги</h3>
-            <p className="text-muted-foreground text-lg">Полный спектр работ по автоэлектрике</p>
-          </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {services.map((service, index) => (
-              <Card key={index} className="hover:shadow-lg transition-all duration-300 hover:-translate-y-1 animate-fade-in group">
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                      <Icon name={service.icon as any} className="text-primary" size={24} />
-                    </div>
-                    <Badge variant="outline">{service.price}</Badge>
-                  </div>
-                  <CardTitle className="text-xl">{service.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <CardDescription className="text-base leading-relaxed">
-                    {service.description}
-                  </CardDescription>
-                  <Button variant="outline" className="w-full mt-4 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                    Подробнее
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* FAQ */}
       <section className="py-16">
